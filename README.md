@@ -24,7 +24,7 @@ docker build . -t ora2pg
 
 The container accepts 2 mounted folders
 
-* "/config" (read only) --> mount your folder containing the "ora2pg.conf" file here
+* "/config" (read only) --> mount your folder containing the "ora2pg.conf" file here (an example configuration is provided under ./config/ora2pg.conf)
 * "/data" --> mount the folder where all output should be written to here
 
 Run the container with:
