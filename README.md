@@ -24,7 +24,7 @@ docker build . -t ora2pg
 
 The container accepts 2 mounted folders
 
-* "/config" (read only) --> mount your folder containing the "ora2pg.conf" file here (an example configuration is provided under ./config/ora2pg.conf)
+* "/config" (read only) --> mount your folder containing the "ora2pg.conf" file here (an example configuration is provided under https://raw.githubusercontent.com/Guy-Incognito/ora2pg-docker/master/config/ora2pg.conf)
 * "/data" --> mount the folder where all output should be written to here
 
 Run the container with:
@@ -36,4 +36,22 @@ docker run  \
     -v /path/to/local/config:/config \
     -v /path/to/local/data:/data \
     georgmoser/ora2pg
+```
+
+
+If no arguments are passed, the default run will be:
+```
+ora2pg --debug -c /config/ora2pg.conf
+```
+
+
+Custom arguments may be passed to the ora2pg call using:
+```
+docker run  \
+    --name ora2pg \
+    -it \
+    -v /path/to/local/config:/config \
+    -v /path/to/local/data:/data \
+    georgmoser/ora2pg \
+    ora2pg [[ARG1..ARGN]]
 ```
