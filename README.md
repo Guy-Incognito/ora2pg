@@ -1,10 +1,13 @@
 # ora2pg Docker 
 
+## Tags and Dockerfile links
+
+* 18.2 (https://github.com/Guy-Incognito/ora2pg-docker/blob/18.2/Dockerfile) Uses Version 18.2: https://github.com/darold/ora2pg/releases/tag/v18.2
+* 19.0 (https://github.com/Guy-Incognito/ora2pg-docker/blob/19.0/Dockerfile) Uses Version 19.0: https://github.com/darold/ora2pg/releases/tag/v19.0
+
 ## Introduction
 
 This container can be used to migrate from Oracle to PostgreSQL utilizing the tool ora2pg.
-
-Uses Version 18.2: https://github.com/darold/ora2pg/releases/tag/v18.2
 
 Documentation: https://ora2pg.darold.net/documentation.html
 
