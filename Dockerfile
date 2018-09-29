@@ -56,4 +56,4 @@ ADD entrypoint.sh /usr/bin/entrypoint.sh
 
 ENTRYPOINT ["entrypoint.sh"]
 
-CMD ["ora2pg", "--debug", "-c", "/config/ora2pg.conf"]
+CMD ["ora2pg"]
