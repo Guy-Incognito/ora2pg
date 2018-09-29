@@ -58,3 +58,15 @@ docker run  \
     georgmoser/ora2pg \
     ora2pg [[ARG1..ARGN]]
 ```
+
+Furthermore the config file location (inside the container) can be passed via an environment variable:
+
+```
+docker run  \
+    --name ora2pg \
+    -e CONFIG_LOCATION=/config/myconfigfile.conf  \
+    -it \
+    -v /path/to/local/config:/config \
+    -v /path/to/local/data:/data \
+    georgmoser/ora2pg 
+```
