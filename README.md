@@ -59,12 +59,18 @@ docker run  \
     ora2pg [[ARG1..ARGN]]
 ```
 
-Furthermore the config file location (inside the container) can be passed via an environment variable:
+Furthermore the 
+
+* CONFIG_LOCATION: ora2pg config file location (inside the container) 
+* OUTPUT_LOCATION: output directory of dump  (inside the container) 
+
+can be passed via environment variables:
 
 ```
 docker run  \
     --name ora2pg \
     -e CONFIG_LOCATION=/config/myconfigfile.conf  \
+    -e OUTPUT_LOCATION=/data/myfolder  \
     -it \
     -v /path/to/local/config:/config \
     -v /path/to/local/data:/data \
