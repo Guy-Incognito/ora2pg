@@ -2,9 +2,9 @@
 
 ## Tags and Dockerfile links
 
-* 18.2 [Dockerfile](https://github.com/Guy-Incognito/ora2pg-docker/blob/18.2/Dockerfile) Uses ora2pg version [18.2](https://github.com/darold/ora2pg/releases/tag/v18.2)
-* 19.0 [Dockerfile](https://github.com/Guy-Incognito/ora2pg-docker/blob/19.0/Dockerfile) Uses ora2pg version [19.0](https://github.com/darold/ora2pg/releases/tag/v19.0)
-* 19.1 [Dockerfile](https://github.com/Guy-Incognito/ora2pg-docker/blob/19.1/Dockerfile) Uses ora2pg version [19.1](https://github.com/darold/ora2pg/releases/tag/v19.1)
+* 18.2 [Dockerfile](https://github.com/Guy-Incognito/ora2pg/blob/18.2/Dockerfile) Uses ora2pg version [18.2](https://github.com/darold/ora2pg/releases/tag/v18.2)
+* 19.0 [Dockerfile](https://github.com/Guy-Incognito/ora2pg/blob/19.0/Dockerfile) Uses ora2pg version [19.0](https://github.com/darold/ora2pg/releases/tag/v19.0)
+* 19.1 [Dockerfile](https://github.com/Guy-Incognito/ora2pg/blob/19.1/Dockerfile) Uses ora2pg version [19.1](https://github.com/darold/ora2pg/releases/tag/v19.1)
 
 ## Introduction
 
@@ -28,7 +28,7 @@ docker build . -t ora2pg
 
 The container accepts 2 mounted folders
 
-* "/config" (read only) --> mount your folder containing the "ora2pg.conf" file here (an example configuration is provided under https://raw.githubusercontent.com/Guy-Incognito/ora2pg-docker/master/config/ora2pg.conf)
+* "/config" (read only) --> mount your folder containing the "ora2pg.conf" file here (example configuration: [ora2pg.conf](https://raw.githubusercontent.com/Guy-Incognito/ora2pg/master/config/ora2pg.conf)
 * "/data" --> mount the folder where all output should be written to here
 
 Run the container with:
