@@ -54,6 +54,8 @@ VOLUME /data
 
 ADD entrypoint.sh /usr/bin/entrypoint.sh
 
+WORKDIR /
+
 ENTRYPOINT ["entrypoint.sh"]
 
 CMD ["ora2pg"]
