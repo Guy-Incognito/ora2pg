@@ -1,6 +1,12 @@
 FROM perl
 
-RUN apt update && apt install -y unzip rpm alien
+RUN apt update && apt install -y unzip rpm alien \
+        libaio1 \
+        # Install postgresql
+        postgresql-client \
+        #install Perl Database Interface
+        libdbi-perl \
+        bzip2
 
 # Install ora2pg
 
@@ -9,18 +15,11 @@ RUN curl -L -o /tmp/ora2pg.zip https://github.com/darold/ora2pg/archive/v19.0.zi
     mv /tmp/ora2pg* /tmp/ora2pg &&\
     (cd /tmp/ora2pg && perl Makefile.PL && make && make install)
 
-# Install postgresql
-
-RUN apt install -y postgresql-client
-
-
 ADD /assets /assets
 
 # Instal Oracle Client
 
 RUN mkdir /usr/lib/oracle/12.2/client64/network/admin -p
-
-RUN apt-get install -y libaio1
 
 RUN alien -i /assets/oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm &&\
     alien -i /assets/oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm &&\
@@ -31,11 +30,10 @@ ENV TNS_ADMIN=/usr/lib/oracle/12.2/client64/network/admin
 ENV LD_LIBRARY_PATH=/usr/lib/oracle/12.2/client64/lib
 ENV PATH=$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/oracle/12.2/client64/bin
 
-# Instal Oracle database driver for the DBI module
-
-RUN apt-get install -y libdbi-perl &&\
-    perl -MCPAN -e 'install DBI' &&\
-    perl -MCPAN -e 'install DBD::Pg'
+# Instal Oracle database driver for the DBI module and module Compress::Zlib
+RUN perl -MCPAN -e 'install DBI' &&\
+    perl -MCPAN -e 'install DBD::Pg' &&\
+    perl -MCPAN -e 'install Bundle::Compress::Zlib'
 
 RUN curl -L http://www.perl.org/CPAN/authors/id/P/PY/PYTHIAN/DBD-Oracle-1.74.tar.gz | (cd /tmp && tar -zxvf -) && \
     mv /tmp/DBD-Ora* /tmp/DBD-Oracle
