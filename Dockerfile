@@ -1,5 +1,7 @@
 FROM perl
 
+ARG ORA2PG_VERSION=19.1
+
 RUN apt update && apt install -y unzip rpm alien \
         libaio1 \
         # Install postgresql
@@ -10,7 +12,7 @@ RUN apt update && apt install -y unzip rpm alien \
 
 # Install ora2pg
 
-RUN curl -L -o /tmp/ora2pg.zip https://github.com/darold/ora2pg/archive/v19.0.zip &&\
+RUN curl -L -o /tmp/ora2pg.zip https://github.com/darold/ora2pg/archive/v$ORA2PG_VERSION.zip &&\
     (cd /tmp && unzip ora2pg.zip && rm -f ora2pg.zip) &&\
     mv /tmp/ora2pg* /tmp/ora2pg &&\
     (cd /tmp/ora2pg && perl Makefile.PL && make && make install)
