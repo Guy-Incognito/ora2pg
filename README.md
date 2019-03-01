@@ -5,6 +5,7 @@
 * 18.2 [Dockerfile](https://github.com/Guy-Incognito/ora2pg/blob/18.2/Dockerfile) Uses ora2pg version [18.2](https://github.com/darold/ora2pg/releases/tag/v18.2)
 * 19.0 [Dockerfile](https://github.com/Guy-Incognito/ora2pg/blob/19.0/Dockerfile) Uses ora2pg version [19.0](https://github.com/darold/ora2pg/releases/tag/v19.0)
 * 19.1 [Dockerfile](https://github.com/Guy-Incognito/ora2pg/blob/19.1/Dockerfile) Uses ora2pg version [19.1](https://github.com/darold/ora2pg/releases/tag/v19.1)
+* 20.0 [Dockerfile](https://github.com/Guy-Incognito/ora2pg/blob/20.0/Dockerfile) Uses ora2pg version [20.0](https://github.com/darold/ora2pg/releases/tag/v20.0)
 
 ## Introduction
 
