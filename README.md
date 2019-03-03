@@ -64,10 +64,9 @@ docker run  \
 Furthermore the 
 
 * CONFIG_LOCATION: ora2pg config file location (inside the container) 
-* OUTPUT_LOCATION: output directory of dump  (inside the container) 
+* OUTPUT_LOCATION: output directory of dump (inside the container) 
 
 can be passed via environment variables:
-
 ```
 docker run  \
     --name ora2pg \
