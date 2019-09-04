@@ -11,7 +11,8 @@ RUN apt update && apt install -y unzip rpm alien \
         postgresql-client \
         #install Perl Database Interface
         libdbi-perl \
-        bzip2
+        bzip2 \
+        libpq-dev
 
 # Install ora2pg
 RUN curl -L -o /tmp/ora2pg.zip https://github.com/darold/ora2pg/archive/v$ORA2PG_VERSION.zip &&\
