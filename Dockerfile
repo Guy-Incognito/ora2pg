@@ -1,11 +1,16 @@
 FROM perl:slim
 
-ARG ORA2PG_VERSION=20.0
+ARG ORA2PG_VERSION=21.0
 
 # ugly fix for "update-alternatives" missing directories in slim image
 RUN mkdir -p /usr/share/man/man1 &&\
     mkdir -p /usr/share/man/man7
-RUN apt update && apt install -y unzip rpm alien \
+RUN apt-get update && apt-get install -y -q --no-install-recommends \
+        unzip \
+        curl \
+        ca-certificates \
+        rpm \
+        alien \
         libaio1 \
         # Install postgresql
         postgresql-client \
