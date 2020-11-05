@@ -66,15 +66,40 @@ Furthermore the
 
 * CONFIG_LOCATION: ora2pg config file location (inside the container) 
 * OUTPUT_LOCATION: output directory of dump (inside the container) 
+* ORA_HOST: Oracle datasource; the same as `ORACLE_DSN` in ora2pg.conf; if no value provided, ORACLE_DSN will be used.
+* ORA_USER: Oracle user; the same as `ORACLE_USER` in ora2pg.conf; if no value provided, ORACLE_USER will be used.
+* ORA_PWD: Oracle password; the same as `ORACLE_PWD` in ora2pg.conf; if no value provided, ORACLE_PWD will be used.
 
 can be passed via environment variables:
-```
+```shell script
 docker run  \
     --name ora2pg \
     -e CONFIG_LOCATION=/config/myconfigfile.conf  \
     -e OUTPUT_LOCATION=/data/myfolder  \
+    -e ORA_HOST=dbi:Oracle:host=mydb.mydom.fr;sid=SIDNAME;port=1521  \
+    -e ORA_USER=system  \
+    -e ORA_PWD=secret  \
     -it \
     -v /path/to/local/config:/config \
     -v /path/to/local/data:/data \
     georgmoser/ora2pg 
 ```
+or with a docker-compose:
+
+```yaml
+version: '3.3'
+services:
+  ora2pg:
+    container_name: ora2pg
+    environment:
+      - CONFIG_LOCATION: "/config/myconfigfile.conf"
+      - OUTPUT_LOCATION: "/data/myfolder"
+      - ORA_HOST: "dbi:Oracle:host=mydb.mydom.fr;sid=SIDNAME;port=1521"
+      - ORA_USER: "system"
+      - ORA_PWD: "secret"
+    volumes:
+      - '/path/to/local/config:/config'
+      - '/path/to/local/data:/data'
+    image: georgmoser/ora2pg
+```
+
