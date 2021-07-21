@@ -1,13 +1,9 @@
 # ora2pg Docker 
 
-## Tags and Dockerfile links
+## Tags and Releases
 
-* 18.2 [Dockerfile](https://github.com/Guy-Incognito/ora2pg/blob/18.2/Dockerfile) Uses ora2pg version [18.2](https://github.com/darold/ora2pg/releases/tag/v18.2)
-* 19.0 [Dockerfile](https://github.com/Guy-Incognito/ora2pg/blob/19.0/Dockerfile) Uses ora2pg version [19.0](https://github.com/darold/ora2pg/releases/tag/v19.0)
-* 19.1 [Dockerfile](https://github.com/Guy-Incognito/ora2pg/blob/19.1/Dockerfile) Uses ora2pg version [19.1](https://github.com/darold/ora2pg/releases/tag/v19.1)
-* 20.0 [Dockerfile](https://github.com/Guy-Incognito/ora2pg/blob/20.0/Dockerfile) Uses ora2pg version [20.0](https://github.com/darold/ora2pg/releases/tag/v20.0)
-* 21.0 [Dockerfile](https://github.com/Guy-Incognito/ora2pg/blob/21.0/Dockerfile) Uses ora2pg version [21.0](https://github.com/darold/ora2pg/releases/tag/v21.0)
-* 21.1 [Dockerfile](https://github.com/Guy-Incognito/ora2pg/blob/21.1/Dockerfile) Uses ora2pg version [21.1](https://github.com/darold/ora2pg/releases/tag/v21.1)
+Tags are created for each [release](https://github.com/Guy-Incognito/ora2pg/releases).
+Tag names relate to their respective ora2pg [release](https://github.com/darold/ora2pg/releases)  .
 
 ## Introduction
 
