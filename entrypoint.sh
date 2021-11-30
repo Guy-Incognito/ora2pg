@@ -47,7 +47,8 @@ function check_env {
 if [ "$1" = 'ora2pg' ]; then
 
     check_env
-
+    # Set host name for oracle
+    /bin/bash -c "echo '127.0.1.1 ${HOSTNAME}' >> /etc/hosts"
     if [ -z "$2" ]; then
         echo "INFO: no args provided. Using default: '--debug -c $CONFIG_LOCATION --basedir $OUTPUT_LOCATION ${ORA_HOST_FLAG} ${ORA_USER_FLAG}  ${ORA_PWD_FLAG_MASKED} ' "
         ora2pg --debug -c ${CONFIG_LOCATION} --basedir ${OUTPUT_LOCATION} ${ORA_HOST_FLAG} ${ORA_USER_FLAG}  ${ORA_PWD_FLAG}
