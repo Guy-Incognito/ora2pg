@@ -1,4 +1,5 @@
 # ora2pg Docker 
+Container image for migrating from oracle to postgresql database.
 
 ## Tags and Releases
 
@@ -23,7 +24,7 @@ docker build . -t ora2pg
 
 ## How to run
 
-## Usage:
+### Usage:
 
 The container accepts 2 mounted folders
 
@@ -100,3 +101,5 @@ services:
     image: georgmoser/ora2pg
 ```
 
+## GUI
+If you are looking for a graphical interface for ora2pg, take a look at [visulate-ora2pg](https://github.com/visulate/visulate-ora2pg)
