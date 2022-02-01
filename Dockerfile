@@ -6,6 +6,7 @@ ARG ORA2PG_VERSION=23.0
 RUN mkdir -p /usr/share/man/man1 &&\
     mkdir -p /usr/share/man/man7
 RUN apt-get update && apt-get install -y -q --no-install-recommends \
+        cpanminus \
         unzip \
         curl \
         ca-certificates \
@@ -20,6 +21,7 @@ RUN apt-get update && apt-get install -y -q --no-install-recommends \
         libdbi-perl \
         bzip2 \
         libpq-dev \
+        gnupg2 \
         libdbd-pg-perl
 
 ADD /assets /assets
@@ -37,10 +39,11 @@ ENV LD_LIBRARY_PATH=/usr/lib/oracle/12.2/client64/lib
 ENV PATH=$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/oracle/12.2/client64/bin
 
 # Install DBI module with Postgres, Oracle and Compress::Zlib module
-RUN perl -MCPAN -e 'install DBI' &&\
-    perl -MCPAN -e 'install DBD::Pg' &&\
-    perl -MCPAN -e 'install DBD::Oracle' &&\
-    perl -MCPAN -e 'install Bundle::Compress::Zlib'
+RUN cpan install Test::NoWarnings &&\
+    cpan install DBI &&\
+    cpan install DBD::Pg &&\
+    cpan install Bundle::Compress::Zlib &&\
+    cpanm install DBD::Oracle@1.82
 
 # Install ora2pg
 RUN curl -L -o /tmp/ora2pg.zip https://github.com/darold/ora2pg/archive/v$ORA2PG_VERSION.zip &&\
