@@ -22,12 +22,6 @@ RUN apt-get update && apt-get install -y -q --no-install-recommends \
         libpq-dev \
         libdbd-pg-perl
 
-# Install ora2pg
-RUN curl -L -o /tmp/ora2pg.zip https://github.com/darold/ora2pg/archive/v$ORA2PG_VERSION.zip &&\
-    (cd /tmp && unzip ora2pg.zip && rm -f ora2pg.zip) &&\
-    mv /tmp/ora2pg* /tmp/ora2pg &&\
-    (cd /tmp/ora2pg && perl Makefile.PL && make && make install)
-
 ADD /assets /assets
 
 # Instal Oracle Client
@@ -47,6 +41,12 @@ RUN perl -MCPAN -e 'install DBI' &&\
     perl -MCPAN -e 'install DBD::Pg' &&\
     perl -MCPAN -e 'install DBD::Oracle' &&\
     perl -MCPAN -e 'install Bundle::Compress::Zlib'
+
+# Install ora2pg
+RUN curl -L -o /tmp/ora2pg.zip https://github.com/darold/ora2pg/archive/v$ORA2PG_VERSION.zip &&\
+    (cd /tmp && unzip ora2pg.zip && rm -f ora2pg.zip) &&\
+    mv /tmp/ora2pg* /tmp/ora2pg &&\
+    (cd /tmp/ora2pg && perl Makefile.PL && make && make install)
 
 # config directory
 RUN mkdir /config

@@ -1,4 +1,4 @@
-name:  Docker Build
+name: Docker Build
 
 on:
   push:
@@ -22,18 +22,33 @@ jobs:
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      #      - name: Login to DockerHub
-      #        uses: docker/login-action@v1
-      #        with:
-      #          username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: georgmoser/ora2pg
+      - name: Print tag name
+        run: echo ${{github.ref_name}}
+      - name: Build
         id: docker_build
         uses: docker/build-push-action@v2
         with:
           context: .
           push: false
-#          tags: ghcr.io/guy-incognito/...
+      - name: Build and push
+        id: docker_build_and_push
+        uses: docker/build-push-action@v2
+        if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+        with:
+          context: .
+          push: true
+          tags: georgmoser/ora2pg:${{github.ref_name}}
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
