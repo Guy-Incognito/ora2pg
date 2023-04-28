@@ -3,7 +3,7 @@ Container image for migrating from oracle to postgresql database.
 
 ## Tags and Releases
 
-Tags are created for each [release](https://github.com/Guy-Incognito/ora2pg/releases).
+Tags are created for each [release](https://github.com/Guy-Incognito/ora2pg/tags).
 Tag names relate to their respective ora2pg [release](https://github.com/darold/ora2pg/releases).
 
 ## Introduction
