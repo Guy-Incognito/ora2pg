@@ -8,59 +8,46 @@ on:
       - '*'
   pull_request:
     branches:
-      - master
-
+      - '*'
+    tags:
+      - '*'
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  
 jobs:
-
-  # This workflow contains a single job called "build"
-  docker-build:
-    name: Docker build
-    # The type of runner that the job will run on
+  build-and-push-docker-image:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      - name: Set up Docker Buildx
+      - uses: actions/checkout@v2
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v1
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Extract metadata (tags, labels) for Docker
+      - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        uses: docker/metadata-action@v2
         with:
-          images: georgmoser/ora2pg
-      - name: Print tag name
-        run: echo ${{github.ref_name}}
-      - name: Build
-        id: docker_build
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Build and Push Versioned Docker Image
+        id: build-and-push
         uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: false
-      - name: Build and push latest
-        id: docker_build_and_push_latest
-        uses: docker/build-push-action@v2
-        if: github.ref == 'refs/heads/master'
+        if: ${{ github.ref != 'refs/heads/main' }}
         with:
           context: .
           push: true
-          tags: georgmoser/ora2pg:latest
-      - name: Build and push tag
-        id: docker_build_and_push_tag
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Build and Push Latest Docker Image
+        id: build-and-push-latest
         uses: docker/build-push-action@v2
-        if: startsWith(github.ref, 'refs/tags/')
+        if: ${{ github.ref == 'refs/heads/main' }}
         with:
           context: .
           push: true
-          tags: georgmoser/ora2pg:${{github.ref_name}}
-      - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          labels: ${{ steps.meta.outputs.labels }}
