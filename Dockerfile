@@ -66,8 +66,10 @@ RUN cpan install Test::NoWarnings &&\
 # Install ora2pg
 RUN curl -L -o /tmp/ora2pg.zip https://github.com/darold/ora2pg/archive/v$ORA2PG_VERSION.zip &&\
     (cd /tmp && unzip ora2pg.zip && rm -f ora2pg.zip) &&\
-    mv /tmp/ora2pg* /tmp/ora2pg &&\
-    (cd /tmp/ora2pg && perl Makefile.PL && make && make install)
+    mv /tmp/ora2pg* /tmp/ora2pg
+
+COPY Ora2Pg.pm /tmp/ora2pg/lib/Ora2Pg.pm
+RUN (cd /tmp/ora2pg && perl Makefile.PL && make && make install)
 
 # config directory
 RUN mkdir /config
