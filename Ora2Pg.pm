@@ -17683,8 +17683,14 @@ sub _test_seq_values
 	if ($self->{pg_dsn})
 	{
 		# create a function to extract the last value of all sequences
+		my $seq_func = "";
+		if ($self->{pg_schema}){
+			$seq_func = "$self->{pg_schema}.get_sequence_last_values()";
+		} else {
+			$seq_func = "get_sequence_last_values()";
+		}
 		my $sql = qq{
-CREATE OR REPLACE FUNCTION get_sequence_last_values() RETURNS TABLE(seqname text,val bigint) AS
+CREATE OR REPLACE FUNCTION $seq_func RETURNS TABLE(seqname text,val bigint) AS
 \$\$
 DECLARE
     seq_name varchar(128);
@@ -17699,7 +17705,7 @@ END
 LANGUAGE 'plpgsql';
 };
 		$self->{dbhdest}->do($sql) or $self->logit("FATAL: " . $self->{dbhdest}->errstr . "\n", 0, 1);
-		my $s = $self->{dbhdest}->prepare("SELECT * FROM get_sequence_last_values()") or $self->logit("FATAL: " . $self->{dbhdest}->errstr . "\n", 0, 1);
+		my $s = $self->{dbhdest}->prepare("SELECT * FROM $seq_func") or $self->logit("FATAL: " . $self->{dbhdest}->errstr . "\n", 0, 1);
 		if (not $s->execute())
 		{
 			push(@errors, "Can not extract information from catalog about last values of sequences.");
@@ -17711,7 +17717,7 @@ LANGUAGE 'plpgsql';
 			$pgret{"\U$row[0]\E"} = $row[1];
 		}
 		$s->finish;
-		$self->{dbhdest}->do("DROP FUNCTION get_sequence_last_values") or $self->logit("FATAL: " . $self->{dbhdest}->errstr . "\n", 0, 1);
+		$self->{dbhdest}->do("DROP FUNCTION $seq_func") or $self->logit("FATAL: " . $self->{dbhdest}->errstr . "\n", 0, 1);
 	}
 
 	foreach my $r (sort keys %$obj_infos)
