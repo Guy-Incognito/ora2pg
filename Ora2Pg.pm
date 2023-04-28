@@ -1295,12 +1295,7 @@ sub _init
 	if (not defined $self->{default_srid}) {
 		$self->{default_srid} = 4326;
 	}
-	# Default function to use for ST_Geometry
-	$self->{st_srid_function} ||= 'ST_SRID';
-	$self->{st_dimension_function} ||= 'ST_DIMENSION';
-	$self->{st_asbinary_function} ||= 'ST_AsBinary';
-	$self->{st_astext_function} ||= 'ST_AsText';
-
+	
 	# Force Ora2Pg to extract spatial object in binary format
 	$self->{geometry_extract_type} = uc($self->{geometry_extract_type});
 	if (!$self->{geometry_extract_type} || !grep(/^$self->{geometry_extract_type}$/, 'WKT','WKB','INTERNAL')) {
@@ -2085,6 +2080,7 @@ sub _send_to_pgdb
         if ($ENV{PG_PASSWORD_FILE}) {
             open(FH, '<', $ENV{PG_PASSWORD_FILE}) or die $!;
             $pg_pwd = <FH>;
+            chomp($pg_pwd);
             close(FH);
         }
  
@@ -4298,7 +4294,7 @@ sub translate_function
 				$sql_output .= $sql_f . "\n\n";
 				if ($self->{estimate_cost})
 				{
-					my ($cost, %cost_detail) = Ora2Pg::PLSQL::estimate_cost($self, $sql_f, 'FUNCTION');
+					my ($cost, %cost_detail) = Ora2Pg::PLSQL::estimate_cost($self, $sql_f);
 					$cost += $Ora2Pg::PLSQL::OBJECT_SCORE{'FUNCTION'};
 					$lcost += $cost;
 					$self->logit("Function ${fct} estimated cost: $cost\n", 1);
@@ -6245,7 +6241,7 @@ sub export_package
 					next if (!$f);
 					my @cnt = $infos{$f}{code} =~ /(\%ORA2PG_COMMENT\d+\%)/i;
 					$total_size_no_comment += (length($infos{$f}{code}) - (17 * length(join('', @cnt))));
-					my ($cost, %cost_detail) = Ora2Pg::PLSQL::estimate_cost($self, $infos{$f}{code}, $infos{$f}{type});
+					my ($cost, %cost_detail) = Ora2Pg::PLSQL::estimate_cost($self, $infos{$f}{code});
 					$self->logit("Function $f estimated cost: $cost\n", 1);
 					$cost_value += $cost;
 					$number_fct++;
@@ -7486,7 +7482,7 @@ sub export_table
 				push(@collist, $self->{tables}{$table}{column_info}{$k}[0]);
 			}
 
-			# Extract column information following the position order
+			# Extract column information following the Oracle position order
 			foreach my $k (sort { 
 					if (!$self->{reordering_columns}) {
 						$self->{tables}{$table}{column_info}{$a}[11] <=> $self->{tables}{$table}{column_info}{$b}[11];
@@ -7762,10 +7758,6 @@ sub export_table
 										} elsif (uc($f->[4]) ne 'NULL') {
 											$f->[4] = "'$f->[4]'";
 										}
-									}
-									elsif ($type =~ /(char|text)/i && $f->[4] !~ /^'/)
-									{
-										$f->[4] = "'$f->[4]'";
 									}
 								}
 								$f->[4] = 'NULL' if ($f->[4] eq "''" && $type =~ /int|double|numeric/i);
@@ -10372,7 +10364,6 @@ sub _create_check_constraint
 			if (!$converted_as_boolean)
 			{
 				$chkconstraint = Ora2Pg::PLSQL::convert_plsql_code($self, $chkconstraint);
-				$chkconstraint =~ s/,$//;
 				$out .= "ALTER TABLE $table DROP CONSTRAINT $self->{pg_supports_ifexists} $k;\n" if ($self->{drop_if_exists});
 				$out .= "ALTER TABLE $table ADD CONSTRAINT $k CHECK ($chkconstraint)$validate;\n";
 			}
@@ -10657,9 +10648,9 @@ sub _howto_get_data
 			elsif ( !$self->{is_mysql} && $src_type->[$k] =~ /^(ST_|STGEOM_)/i)
 			{
 				if ($self->{geometry_extract_type} eq 'WKB') {
-					$str .= "CASE WHEN $name->[$k] IS NOT NULL THEN $self->{st_asbinary_function}($name->[$k]) ELSE NULL END,";
+					$str .= "CASE WHEN $name->[$k] IS NOT NULL THEN SDE.ST_ASBINARY($name->[$k]) ELSE NULL END,";
 				} else {
-					$str .= "CASE WHEN $name->[$k] IS NOT NULL THEN $self->{st_astext_function}($name->[$k]) ELSE NULL END,";
+					$str .= "CASE WHEN $name->[$k] IS NOT NULL THEN SDE.ST_ASTEXT($name->[$k]) ELSE NULL END,";
 				}
 			}
 			# Oracle geometries
@@ -10708,9 +10699,9 @@ sub _howto_get_data
 				else
 				{
 					if ($self->{geometry_extract_type} eq 'WKB') {
-						$str .= "CASE WHEN $name->[$k] IS NOT NULL THEN CONCAT('SRID=',$self->{st_srid_function}($name->[$k]),';', $self->{st_asbinary_function}($name->[$k]->[0])) ELSE NULL END,";
+						$str .= "CASE WHEN $name->[$k] IS NOT NULL THEN CONCAT('SRID=',ST_Srid($name->[$k]),';', ST_AsBinary($name->[$k]->[0])) ELSE NULL END,";
 					} else {
-						$str .= "CASE WHEN $name->[$k] IS NOT NULL THEN CONCAT('SRID=',$self->{st_srid_function}($name->[$k]),';', $self->{st_astext_function}($name->[$k]->[0])) ELSE NULL END,";
+						$str .= "CASE WHEN $name->[$k] IS NOT NULL THEN CONCAT('SRID=',ST_Srid($name->[$k]),';', ST_AsText($name->[$k]->[0])) ELSE NULL END,";
 					}
 				}
 			}
@@ -10720,7 +10711,7 @@ sub _howto_get_data
 				if ($self->{db_version} < '5.7.6') {
 					$str .= "CASE WHEN $name->[$k] IS NOT NULL THEN AsText($name->[$k]) ELSE NULL END,";
 				} else {
-					$str .= "CASE WHEN $name->[$k] IS NOT NULL THEN $self->{st_astext_function}($name->[$k]) ELSE NULL END,";
+					$str .= "CASE WHEN $name->[$k] IS NOT NULL THEN ST_AsText($name->[$k]) ELSE NULL END,";
 				}
 			}
 			elsif ( !$self->{is_mysql} && (($src_type->[$k] =~ /clob/i) || ($src_type->[$k] =~ /blob/i)) )
@@ -13608,7 +13599,7 @@ sub _convert_function
 	my $create_type = '';
 	while ($fct_detail{declare} =~ s/\s+TYPE\s+([^\s]+)\s+IS\s+RECORD\s*\(([^;]+)\)\s*;//is)
 	{
-		$create_type .= "DROP TYPE  $self->{pg_supports_ifexists} $1;\n";
+		$create_type .= "DROP TYPE  $self->{pg_supports_ifexists} $1;\n" if ($self->{drop_if_exists});
 		$create_type .= "CREATE TYPE $1 AS ($2);\n";
 	}
 	while ($fct_detail{declare} =~ s/\s+TYPE\s+([^\s]+)\s+(AS|IS)\s*(VARRAY|VARYING ARRAY)\s*\((\d+)\)\s*OF\s*([^;]+);//is) {
@@ -13625,7 +13616,7 @@ sub _convert_function
 		$internal_name  =~ s/^[^\.]+\.//;
 		my $declar = Ora2Pg::PLSQL::replace_sql_type($tbname, $self->{pg_numeric_type}, $self->{default_numeric}, $self->{pg_integer_type}, $self->{varchar_to_text}, %{$self->{data_type}});
 		$declar =~ s/[\n\r]+//s;
-		$create_type .= "DROP TYPE $self->{pg_supports_ifexists} $1;\n";
+		$create_type .= "DROP TYPE $self->{pg_supports_ifexists} $1;\n" if ($self->{drop_if_exists});
 		$create_type .= "CREATE TYPE $type_name AS ($internal_name $declar\[$size\]);\n";
 	}
 	
@@ -15853,22 +15844,10 @@ sub _show_infos
 			{
 				my $triggers = $self->_get_triggers();
 				my $total_size = 0;
-				foreach my $trig (@{$triggers})
-				{
-                                        # Remove comment and text constant, they are not useful in assessment
-                                        $self->_remove_comments(\$trig->[4]);
-                                        $self->{comment_values} = ();
-                                        $self->{text_values} = ();
-                                        $self->{text_values_pos} = 0;
-                                        if ($self->{is_mysql}) {
-                                                $trig->[4] = $self->_convert_function($trig->[8], $trig->[4], $trig->[0]);
-                                        } else {
-                                                $trig->[4] = $self->_convert_function($trig->[8], $trig->[4]);
-                                        }
+				foreach my $trig (@{$triggers}) {
 					$total_size += length($trig->[4]);
-					if ($self->{estimate_cost})
-					{
-						my ($cost, %cost_detail) = Ora2Pg::PLSQL::estimate_cost($self, $trig->[4], 'TRIGGER');
+					if ($self->{estimate_cost}) {
+						my ($cost, %cost_detail) = Ora2Pg::PLSQL::estimate_cost($self, $trig->[4]);
 						$report_info{'Objects'}{$typ}{'cost_value'} += $cost;
 						$report_info{'Objects'}{$typ}{'detail'} .= "\L$trig->[0]: $cost\E\n";
 						$report_info{full_trigger_details}{"\L$trig->[0]\E"}{count} = $cost;
@@ -15893,20 +15872,10 @@ sub _show_infos
 				my $total_size = 0;
 				foreach my $fct (keys %{$functions})
 				{
-                                        # Remove comment and text constant, they are not useful in assessment
-                                        $self->_remove_comments(\$functions->{$fct}{text});
-                                        $self->{comment_values} = ();
-                                        $self->{text_values} = ();
-                                        $self->{text_values_pos} = 0;
-                                        if ($self->{is_mysql}) {
-                                                $functions->{$fct}{text} = $self->_convert_function($functions->{$fct}{owner}, $functions->{$fct}{text}, $fct);
-                                        } else {
-                                                $functions->{$fct}{text} = $self->_convert_function($functions->{$fct}{owner}, $functions->{$fct}{text});
-                                        }
 					$total_size += length($functions->{$fct}{text});
 					if ($self->{estimate_cost})
 					{
-						my ($cost, %cost_detail) = Ora2Pg::PLSQL::estimate_cost($self, $functions->{$fct}{text}, 'FUNCTION');
+						my ($cost, %cost_detail) = Ora2Pg::PLSQL::estimate_cost($self, $functions->{$fct}{text});
 						$report_info{'Objects'}{$typ}{'cost_value'} += $cost;
 						$report_info{'Objects'}{$typ}{'detail'} .= "\L$fct: $cost\E\n";
 						$report_info{full_function_details}{"\L$fct\E"}{count} = $cost;
@@ -15928,20 +15897,10 @@ sub _show_infos
 				my $total_size = 0;
 				foreach my $proc (keys %{$procedures})
 				{
-					# Remove comment and text constant, they are not useful in assessment
-					$self->_remove_comments(\$procedures->{$proc}{text});
-					$self->{comment_values} = ();
-					$self->{text_values} = ();
-					$self->{text_values_pos} = 0;
-					if ($self->{is_mysql}) {
-						$procedures->{$proc}{text} = $self->_convert_function($procedures->{$proc}{owner}, $procedures->{$proc}{text}, $proc);
-					} else {
-						$procedures->{$proc}{text} = $self->_convert_function($procedures->{$proc}{owner}, $procedures->{$proc}{text});
-					}
 					$total_size += length($procedures->{$proc}{text});
 					if ($self->{estimate_cost})
 					{
-						my ($cost, %cost_detail) = Ora2Pg::PLSQL::estimate_cost($self, $procedures->{$proc}{text}, 'PROCEDURE');
+						my ($cost, %cost_detail) = Ora2Pg::PLSQL::estimate_cost($self, $procedures->{$proc}{text});
 						$report_info{'Objects'}{$typ}{'cost_value'} += $cost;
 						$report_info{'Objects'}{$typ}{'detail'} .= "\L$proc: $cost\E\n";
 						$report_info{full_function_details}{"\L$proc\E"}{count} = $cost;
@@ -15983,7 +15942,7 @@ sub _show_infos
 							next if (!$f);
 							if ($self->{estimate_cost})
 							{
-								my ($cost, %cost_detail) = Ora2Pg::PLSQL::estimate_cost($self, $infos{$f}{code}, $infos{$f}{type});
+								my ($cost, %cost_detail) = Ora2Pg::PLSQL::estimate_cost($self, $infos{$f}{code});
 								$report_info{'Objects'}{$typ}{'cost_value'} += $cost;
 								$report_info{'Objects'}{$typ}{'detail'} .= "\L$f: $cost\E\n";
 								$report_info{full_function_details}{"\L$f\E"}{count} = $cost;
