@@ -1,6 +1,6 @@
 FROM perl:slim
 
-ARG ORA2PG_VERSION=24.1
+ARG ORA2PG_VERSION=24.2
 
 # ugly fix for "update-alternatives" missing directories in slim image
 RUN mkdir -p /usr/share/man/man1 &&\
