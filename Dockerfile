@@ -1,6 +1,8 @@
 FROM perl:slim
 
 ARG ORA2PG_VERSION=24.3
+ARG ORA_VERSION=19.26
+ARG ORA_VERSION_POST=0.0.0-1.el8
 
 # ugly fix for "update-alternatives" missing directories in slim image
 RUN mkdir -p /usr/share/man/man1 &&\
@@ -17,7 +19,7 @@ RUN apt-get update && apt-get install -y -q --no-install-recommends \
         postgresql-client \
         # Install mysql
         libdbd-mysql \
-        #install Perl Database Interface
+        # Install Perl Database Interface
         libdbi-perl \
         bzip2 \
         libpq-dev \
@@ -26,17 +28,18 @@ RUN apt-get update && apt-get install -y -q --no-install-recommends \
 
 ADD /assets /assets
 
-# Instal Oracle Client
-RUN mkdir /usr/lib/oracle/12.2/client64/network/admin -p
+# Install Oracle Client
+RUN mkdir /usr/lib/oracle/$ORA_VERSION/client64/network/admin -p
 
-RUN alien -i /assets/oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm &&\
-    alien -i /assets/oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm &&\
-    alien -i /assets/oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm
+RUN arch=$(rpm --eval '%{_arch}') && \
+    alien -i "/assets/oracle-instantclient$ORA_VERSION-basic-$ORA_VERSION.$ORA_VERSION_POST.${arch}.rpm" && \
+    alien -i "/assets/oracle-instantclient$ORA_VERSION-devel-$ORA_VERSION.$ORA_VERSION_POST.${arch}.rpm" && \
+    alien -i "/assets/oracle-instantclient$ORA_VERSION-sqlplus-$ORA_VERSION.$ORA_VERSION_POST.${arch}.rpm"
 
-ENV ORACLE_HOME=/usr/lib/oracle/12.2/client64
-ENV TNS_ADMIN=/usr/lib/oracle/12.2/client64/network/admin
-ENV LD_LIBRARY_PATH=/usr/lib/oracle/12.2/client64/lib
-ENV PATH=$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/oracle/12.2/client64/bin
+ENV ORACLE_HOME=/usr/lib/oracle/$ORA_VERSION/client64
+ENV TNS_ADMIN=/usr/lib/oracle/$ORA_VERSION/client64/network/admin
+ENV LD_LIBRARY_PATH=/usr/lib/oracle/$ORA_VERSION/client64/lib
+ENV PATH=$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/oracle/$ORA_VERSION/client64/bin
 
 # Install DBI module with Postgres, Oracle and Compress::Zlib module
 RUN cpan install Test::NoWarnings &&\
