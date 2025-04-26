@@ -10,10 +10,10 @@ services:
       - ./data:/data
       - ./config:/config
     environment:
-      - ORA_HOST=dbi:Oracle:host=172.31.112.1;service_name=XEPDB1;port=1521
-      - ORA_USER=system
-      - ORA_PWD=password
-      - CONFIG_LOCATION=/config/ora2pg.conf
-      - OUTPUT_LOCATION=/data/pg
-      - EXP_TYPE=TABLE
+      ORA_HOST: "dbi:Oracle:host=172.31.112.1;service_name=XEPDB1;port=1521"
+      ORA_USER: system"
+      ORA_PWD: "password"
+      CONFIG_LOCATION: "/config/ora2pg.conf"
+      OUTPUT_LOCATION: "/data/pg"
+      EXP_TYPE: "TABLE"
 
