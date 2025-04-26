@@ -1,18 +1,19 @@
-version: '3'
 services:
 
   ora2pg:
     build:
       context: .
-#    image: georgmoser/ora2pg
+#    image: yourimage/ora2pg
     container_name: ora2pg
     network_mode: "host"
     volumes:
-      - ora2pg-data:/data
+      - ./data:/data
       - ./config:/config
     environment:
-      - CONFIG_LOCATION=config/ora2pg.conf
+      - ORA_HOST=dbi:Oracle:host=172.31.112.1;service_name=XEPDB1;port=1521
+      - ORA_USER=system
+      - ORA_PWD=password
+      - CONFIG_LOCATION=/config/ora2pg.conf
+      - OUTPUT_LOCATION=/data/pg
+      - EXP_TYPE=TABLE
 
-
-volumes:
-  ora2pg-data:
