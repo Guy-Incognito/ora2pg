@@ -45,7 +45,7 @@ function check_env {
 
     EXP_TYPE_FLAG=""
     if [ -z "$EXP_TYPE" ]; then
-        echo "INFO: No EXP_TYPE variable provided. Using default value of 'EXPORT TYPE' in '/config/ora2pg.conf'"
+        echo "INFO: No EXP_TYPE variable provided. Using default value of 'EXPORT TYPE' in '$CONFIG_LOCATION'"
     else
         echo "INFO: EXP_TYPE variable detected: '$EXP_TYPE'"
         EXP_TYPE_FLAG=" -t $EXP_TYPE "
@@ -73,7 +73,7 @@ if [ "$1" = 'ora2pg' ]; then
                 OUTPUT_FILE="pginsert.sql"
                 ;;
             *)
-                echo "WARNING: Unrecognized EXP_TYPE '$EXP_TYPE'. Using default output in '/config/ora2pg.conf'"
+                echo "WARNING: Unrecognized EXP_TYPE '$EXP_TYPE'. Using default output in '$CONFIG_LOCATION'"
                 ;;
         esac
         if [ -n "$OUTPUT_FILE" ]; then
