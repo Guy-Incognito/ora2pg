@@ -89,12 +89,12 @@ services:
   ora2pg:
     container_name: ora2pg
     environment:
-      - ORA_HOST=dbi:Oracle:host=172.31.112.1;service_name=XEPDB1;port=1521
-      - ORA_USER=system
-      - ORA_PWD=password
-      - CONFIG_LOCATION=/config/ora2pg.conf
-      - OUTPUT_LOCATION=/data/pg
-      - EXP_TYPE=INSERT
+      - CONFIG_LOCATION: "/config/myconfigfile.conf"
+      - OUTPUT_LOCATION: "/data/myfolder"
+      - ORA_HOST: "dbi:Oracle:host=mydb.mydom.fr;sid=SIDNAME;port=1521"
+      - ORA_USER: "system"
+      - ORA_PWD: "secret"
+      - EXP_TYPE: "TABLE"
     volumes:
       - '/path/to/local/config:/config'
       - '/path/to/local/data:/data'
