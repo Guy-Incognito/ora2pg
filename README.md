@@ -90,11 +90,11 @@ services:
   ora2pg:
     container_name: ora2pg
     environment:
-      - CONFIG_LOCATION: "/config/myconfigfile.conf"
-      - OUTPUT_LOCATION: "/data/myfolder"
-      - ORA_HOST: "dbi:Oracle:host=mydb.mydom.fr;sid=SIDNAME;port=1521"
-      - ORA_USER: "system"
-      - ORA_PWD: "secret"
+      CONFIG_LOCATION: "/config/myconfigfile.conf"
+      OUTPUT_LOCATION: "/data/myfolder"
+      ORA_HOST: "dbi:Oracle:host=mydb.mydom.fr;sid=SIDNAME;port=1521"
+      ORA_USER: "system"
+      ORA_PWD: "secret"
     volumes:
       - '/path/to/local/config:/config'
       - '/path/to/local/data:/data'
