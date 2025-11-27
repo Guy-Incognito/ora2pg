@@ -21,9 +21,8 @@ Thanks to Gilles Darold for this awesome tool!!
 
 ## How to build
 
-```
+```shell
 docker build . -t ora2pg
-
 ```
 
 ## How to run
@@ -37,7 +36,7 @@ The container accepts 2 mounted folders
 
 Run the container with:
 
-```
+```shell
 docker run  \
     --name ora2pg \
     -it \
@@ -48,13 +47,13 @@ docker run  \
 
 
 If no arguments are passed, the default run will be:
-```
+```shell
 ora2pg --debug -c /config/ora2pg.conf
 ```
 
 
 Custom arguments may be passed to the ora2pg call using:
-```
+```shell
 docker run  \
     --name ora2pg \
     -it \
@@ -73,7 +72,7 @@ Furthermore the
 * ORA_PWD: Oracle password; the same as `ORACLE_PWD` in ora2pg.conf; if no value provided, ORACLE_PWD will be used.
 
 can be passed via environment variables:
-```shell script
+```shell
 docker run  \
     --name ora2pg \
     -e CONFIG_LOCATION=/config/myconfigfile.conf  \
